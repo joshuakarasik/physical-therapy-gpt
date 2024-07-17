@@ -53,7 +53,7 @@ function App() {
 
     const systemMessage = {
       role: "system",
-      content: "Explain all concepts like I am 10 years old.",
+      content: "Speak like you are a Doctor of Physical Therapy and are great at helping patients.",
     };
 
     const apiRequestBody = {
@@ -92,7 +92,10 @@ function App() {
       <div style={{ position: "relative", height: "800px", width: "700px" }}>
         <MainContainer>
           <ChatContainer>
-            <MessageList typingIndicator={typing ? <TypingIndicator content="ChatGPT is typing" /> : null}>
+            <MessageList
+              scrollBehavior="smooth"
+              typingIndicator={typing ? <TypingIndicator content="ChatGPT is typing" /> : null}
+            >
               {messages.map((message, i) => (
                 <Message
                   key={i}
