@@ -1,7 +1,4 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   MainContainer,
@@ -65,11 +62,15 @@ function App() {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: "Bearer " + API_KEY,
+          Authorization: `Bearer ${API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(apiRequestBody),
       });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
 
       const data = await response.json();
       setMessages([
@@ -90,9 +91,10 @@ function App() {
   return (
     <div className="App">
       <div style={{ position: "relative", height: "800px", width: "700px" }}>
-        <MainContainer>
-          <ChatContainer>
+        <MainContainer className="h-full w-full flex flex-col bg-black text-white">
+          <ChatContainer className="flex-1 overflow-hidden bg-red-600">
             <MessageList
+              className="flex-1 overflow-y-auto bg-white text-black"
               scrollBehavior="smooth"
               typingIndicator={typing ? <TypingIndicator content="ChatGPT is typing" /> : null}
             >
@@ -111,6 +113,7 @@ function App() {
             <MessageInput
               placeholder="Type message here"
               onSend={handleSend}
+              className="mt-4"
             />
           </ChatContainer>
         </MainContainer>
