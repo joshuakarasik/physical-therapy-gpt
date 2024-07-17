@@ -1,13 +1,5 @@
 import { useState } from "react";
-import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import {
-  MainContainer,
-  ChatContainer,
-  MessageList,
-  Message,
-  MessageInput,
-  TypingIndicator,
-} from "@chatscope/chat-ui-kit-react";
+import "./index.css"; // Ensure Tailwind CSS is imported
 
 const API_KEY = "sk-None-7Usfe4OS0c7ePwQTP4AET3BlbkFJClrndZDo3oD64KwF4y87";
 
@@ -20,8 +12,11 @@ function App() {
       direction: "incoming",
     },
   ]);
+  const [inputMessage, setInputMessage] = useState("");
 
   const handleSend = (message) => {
+    if (!message.trim()) return;
+
     const newMessage = {
       message: message,
       sender: "user",
@@ -31,7 +26,7 @@ function App() {
     const newMessages = [...messages, newMessage];
 
     setMessages(newMessages);
-
+    setInputMessage(""); // Clear the input field
     setTyping(true);
 
     processMessageToChatGPT(newMessages);
@@ -50,7 +45,8 @@ function App() {
 
     const systemMessage = {
       role: "system",
-      content: "Speak like you are a Doctor of Physical Therapy and are great at helping patients.",
+      content:
+        "Speak like you are a Doctor of Physical Therapy and are great at helping patients. You ask questions to understand the patient's issues, and then once you have gathered enough information, you give suggestions on exercise and plans to help the patient get better. You let the patient know that you are only giving advice and cannot fully help without a doctor present.",
     };
 
     const apiRequestBody = {
@@ -89,34 +85,44 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <div style={{ position: "relative", height: "800px", width: "700px" }}>
-        <MainContainer className="h-full w-full flex flex-col bg-black text-white">
-          <ChatContainer className="flex-1 overflow-hidden bg-red-600">
-            <MessageList
-              className="flex-1 overflow-y-auto bg-white text-black"
-              scrollBehavior="smooth"
-              typingIndicator={typing ? <TypingIndicator content="ChatGPT is typing" /> : null}
+    <div className="App h-screen w-screen flex flex-col bg-gray-100 text-gray-800 font-sans">
+      <header className="text-2xl text-blue-700 font-bold text-center py-4 bg-white shadow-md">
+        Welcome to Physical Therapy
+      </header>
+      <div className="chat-container flex flex-col flex-grow">
+        <div className="message-list flex-grow p-4 overflow-y-auto bg-gray-50">
+          {messages.map((message, i) => (
+            <div
+              key={i}
+              className={`message mb-4 p-4 rounded max-w-3/4 ${
+                message.direction === "incoming"
+                  ? "bg-blue-100 text-gray-800 self-start"
+                  : "bg-blue-300 text-gray-800 self-end"
+              }`}
             >
-              {messages.map((message, i) => (
-                <Message
-                  key={i}
-                  model={{
-                    message: message.message,
-                    sentTime: "just now",
-                    sender: message.sender,
-                    direction: message.direction,
-                  }}
-                />
-              ))}
-            </MessageList>
-            <MessageInput
-              placeholder="Type message here"
-              onSend={handleSend}
-              className="mt-4"
-            />
-          </ChatContainer>
-        </MainContainer>
+              <span className="font-bold">{message.sender}:</span> {message.message}
+            </div>
+          ))}
+          {typing && <div className="typing-indicator italic text-gray-500">ChatGPT is typing...</div>}
+        </div>
+        <div className="message-input flex p-4 bg-white shadow-md">
+          <input
+            type="text"
+            value={inputMessage}
+            placeholder="Type message here"
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend(inputMessage);
+            }}
+            className="flex-grow p-2 border border-gray-300 rounded bg-gray-50 text-gray-800"
+          />
+          <button
+            onClick={() => handleSend(inputMessage)}
+            className="ml-2 p-2 bg-blue-700 text-white rounded hover:bg-blue-900"
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
