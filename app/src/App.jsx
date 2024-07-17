@@ -20,6 +20,7 @@ function App() {
     {
       message: "Hello, I am ChatGPT",
       sender: "ChatGPT",
+      direction: "incoming",
     },
   ]);
 
@@ -60,22 +61,30 @@ function App() {
       messages: [systemMessage, ...apiMessages],
     };
 
-    await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(apiRequestBody),
-    })
-      .then((data) => {
-        return data.json();
-      })
-      .then((data) => {
-        console.log(data);
-        console.log(data.choices[0].message.content);
-        setMessages([...chatMessages, {}]);
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + API_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiRequestBody),
       });
+
+      const data = await response.json();
+      setMessages([
+        ...chatMessages,
+        {
+          message: data.choices[0].message.content,
+          sender: "ChatGPT",
+          direction: "incoming",
+        },
+      ]);
+      setTyping(false);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setTyping(false);
+    }
   }
 
   return (
@@ -83,8 +92,7 @@ function App() {
       <div style={{ position: "relative", height: "800px", width: "700px" }}>
         <MainContainer>
           <ChatContainer>
-            <MessageList>
-              typingIndicator={typing ? <TypingIndicator content="ChatGPT is typing" /> : null}
+            <MessageList typingIndicator={typing ? <TypingIndicator content="ChatGPT is typing" /> : null}>
               {messages.map((message, i) => (
                 <Message
                   key={i}
