@@ -1,6 +1,6 @@
 # Custom GPT Chatbot for a Physical Therapist
 
-This project was created to gain hands-on experience with OpenAI's APIs while building a practical, custom chatbot for a Physical Therapist. My brother-in-law, a Doctor of Physical Therapy, needed a tool to quickly access answers to common questions during his work. To address this need, I developed this custom GPT chatbot.
+This project was created to gain hands-on experience with OpenAI's APIs while building a practical and custom chatbot for a Physical Therapist. My brother-in-law, who is a Doctor of Physical Therapy, needed a tool to quickly access answers to common questions during his work. To address this need, I developed this custom GPT chatbot for him.
 
 ## Technologies Used
 - **Frontend Framework:** React.js (powered by Vite)
